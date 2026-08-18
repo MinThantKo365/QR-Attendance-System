@@ -1,7 +1,32 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InvitationController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/invitation-request', [InvitationController::class, 'request'])->name('invitation.request');
+Route::post('/invitation-request', [InvitationController::class, 'submitRequest'])->name('invitation.request.store');
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'loginPage'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+});
+
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
 Route::get('/', function () {
-    return view('welcome');
+    return view('scanner/index');
+});
+
+// QR scanning should work without login.
+Route::post('/scanner/scan', [AttendanceController::class, 'scan'])->name('attendance.scan');
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::get('/admin', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/admin/invitations', [InvitationController::class, 'index'])->name('invitation');
+    Route::get('/admin/invitations/create', [InvitationController::class, 'create'])->name('invitation.create');
+    Route::post('/admin/invitations', [InvitationController::class, 'store'])->name('invitation.store');
+    Route::get('/admin/attendance', [AttendanceController::class, 'index'])->name('attendance');
 });
