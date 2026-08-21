@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
+    <link rel="icon" href="{{ asset('images/logo.png') }}">
     <title>
         @yield('title', 'QR Attendance System')
     </title>
@@ -29,7 +29,8 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
 
-            <a class="navbar-brand fw-bold" href="/">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/">
+                <img src="{{ asset('images/logo.png') }}" alt="QR Attendance" height="32" class="navbar-logo">
                 QR Attendance
             </a>
 
@@ -59,6 +60,11 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url('/admin/attendance') }}">
                                     Attendance
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('/admin/events') }}">
+                                    Events
                                 </a>
                             </li>
                         @endif
@@ -101,7 +107,7 @@
                                     </button>
                                 </form>
                             </li>
-                                
+
                         </ul>
 
                     </div>
@@ -126,17 +132,6 @@
     <!-- Flash Messages -->
 
     <div class="container mt-3">
-
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="bi bi-check-circle"></i>
-
-                {{ session('success') }}
-
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
 
         @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -175,7 +170,46 @@
         @yield('content')
 
     </main>
+
+    @if (session('success'))
+        <div id="layoutSuccessPopup" class="success-popup">
+            <div class="success-popup-card">
+                <button type="button" class="success-popup-close" id="layoutSuccessClose" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+                <div class="success-popup-icon">
+                    <i class="bi bi-check-lg"></i>
+                </div>
+                <p class="success-popup-kicker">Success</p>
+                <h3>Done!</h3>
+                <p class="success-popup-name">{{ session('success') }}</p>
+                <button type="button" class="btn btn-primary mt-3" id="layoutSuccessOk">OK</button>
+            </div>
+        </div>
+    @endif
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            const popup = document.getElementById('layoutSuccessPopup');
+            if (!popup) {
+                return;
+            }
+
+            const closePopup = function () {
+                popup.classList.add('d-none');
+            };
+
+            document.getElementById('layoutSuccessClose')?.addEventListener('click', closePopup);
+            document.getElementById('layoutSuccessOk')?.addEventListener('click', closePopup);
+
+            popup.addEventListener('click', function (event) {
+                if (event.target === popup) {
+                    closePopup();
+                }
+            });
+        })();
+    </script>
     @stack('scripts')
 </body>
 </html>

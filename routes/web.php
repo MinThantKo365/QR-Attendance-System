@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvitationController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EventController;
 
 Route::get('/invitation-request', [InvitationController::class, 'request'])->name('invitation.request');
 Route::post('/invitation-request', [InvitationController::class, 'submitRequest'])->name('invitation.request.store');
@@ -27,6 +28,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/admin/invitations', [InvitationController::class, 'index'])->name('invitation');
     Route::get('/admin/invitations/create', [InvitationController::class, 'create'])->name('invitation.create');
+    Route::get('/admin/invitations/{id}', [InvitationController::class, 'detail'])->name('invitation.detail');
+    Route::post('/admin/invitations/{id}/send', [InvitationController::class, 'sendEmail'])->name('invitation.send');
     Route::post('/admin/invitations', [InvitationController::class, 'store'])->name('invitation.store');
     Route::get('/admin/attendance', [AttendanceController::class, 'index'])->name('attendance');
+    Route::get('/admin/events', [EventController::class, 'index'])->name('events');
 });

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Mail\InvitationQrMail;
+use App\Models\Event;
 use App\Models\Invitation;
+use App\Support\QrCodePng;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -21,12 +23,45 @@ class InvitationController extends Controller
 
     public function create()
     {
-        return view('admin.invitations.create');
+        $events = Event::query()
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.invitations.create', compact('events'));
+    }
+
+    public function detail($id)
+    {
+        $invitation = Invitation::with('attendance')->findOrFail($id);
+        $qrBase64 = base64_encode(QrCodePng::generate($invitation->invite_id));
+
+        return view('admin.invitations.detail', compact('invitation', 'qrBase64'));
+    }
+
+    public function sendEmail($id)
+    {
+        $invitation = Invitation::findOrFail($id);
+
+        try {
+            Mail::to($invitation->email)->send(new InvitationQrMail($invitation));
+            $invitation->update(['sent_at' => now()]);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return redirect()
+                ->route('invitation.detail', $invitation->id)
+                ->with('error', 'Could not send the invitation email. Please try again.');
+        }
+
+        return redirect()
+            ->route('invitation.detail', $invitation->id)
+            ->with('success', 'Invitation email sent to '.$invitation->email.'.');
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'event_id' => 'nullable|exists:events,id',
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:50',
@@ -34,6 +69,7 @@ class InvitationController extends Controller
             'expires_at' => 'nullable|date',
         ]);
 
+        $validated['event_id'] = $validated['event_id'] ?? null;
         $validated['invite_id'] = (string) Str::uuid();
         $validated['sent_at'] = now();
 

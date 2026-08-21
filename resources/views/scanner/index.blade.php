@@ -55,11 +55,18 @@
             </div>
         </div>
 
-        <div id="welcomePopup" class="scanner-welcome-popup d-none">
-            <div class="scanner-welcome-card">
-                <i class="bi bi-check-circle-fill"></i>
+        <div id="welcomePopup" class="success-popup d-none">
+            <div class="success-popup-card">
+                <button type="button" class="success-popup-close" id="welcomePopupClose" aria-label="Close">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+                <div class="success-popup-icon">
+                    <i class="bi bi-check-lg"></i>
+                </div>
+                <p class="success-popup-kicker">Checked in</p>
                 <h3 id="welcomePopupTitle">Welcome!</h3>
-                <p id="welcomePopupText"></p>
+                <p id="welcomePopupText" class="success-popup-name"></p>
+                <p class="success-popup-note">Attendance recorded successfully</p>
             </div>
         </div>
     </div>
@@ -79,6 +86,7 @@
         const welcomePopup = document.getElementById('welcomePopup');
         const welcomePopupTitle = document.getElementById('welcomePopupTitle');
         const welcomePopupText = document.getElementById('welcomePopupText');
+        const welcomePopupClose = document.getElementById('welcomePopupClose');
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
         const scanUrl = @json(route('attendance.scan'));
 
@@ -101,6 +109,15 @@
             placeholderEl.classList.toggle('d-none', !visible);
         }
 
+        function hideWelcomePopup() {
+            welcomePopup.classList.add('d-none');
+
+            if (welcomeTimer) {
+                clearTimeout(welcomeTimer);
+                welcomeTimer = null;
+            }
+        }
+
         function showWelcomePopup(name) {
             welcomePopupTitle.textContent = 'Welcome!';
             welcomePopupText.textContent = name;
@@ -110,10 +127,16 @@
                 clearTimeout(welcomeTimer);
             }
 
-            welcomeTimer = setTimeout(() => {
-                welcomePopup.classList.add('d-none');
-            }, 5000);
+            welcomeTimer = setTimeout(hideWelcomePopup, 2000);
         }
+
+        welcomePopup.addEventListener('click', function (event) {
+            if (event.target === welcomePopup) {
+                hideWelcomePopup();
+            }
+        });
+
+        welcomePopupClose.addEventListener('click', hideWelcomePopup);
 
         async function recordAttendance(inviteId) {
             const response = await fetch(scanUrl, {
@@ -183,7 +206,7 @@
                 } else {
                     setStatus('Idle');
                 }
-            }, 5000);
+            }, 2000);
         }
 
         async function startCamera() {

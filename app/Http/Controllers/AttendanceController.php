@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
+use App\Models\Event;
 use App\Models\Invitation;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -12,13 +13,28 @@ use Illuminate\Support\Str;
 
 class AttendanceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $attendances = Attendance::with(['invitation', 'scanner'])
+        $eventId = $request->query('event_id');
+        $scannedDate = $request->query('scanned_date');
+
+        $attendances = Attendance::with(['invitation.event', 'scanner'])
+            ->when($eventId, function ($query) use ($eventId) {
+                $query->whereHas('invitation', function ($invitationQuery) use ($eventId) {
+                    $invitationQuery->where('event_id', $eventId);
+                });
+            })
+            ->when($scannedDate, function ($query) use ($scannedDate) {
+                $query->whereDate('scanned_at', $scannedDate);
+            })
             ->latest('scanned_at')
             ->get();
 
-        return view('admin.attendance.index', compact('attendances'));
+        $events = Event::query()
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.attendance.index', compact('attendances', 'events', 'eventId', 'scannedDate'));
     }
 
     public function scan(Request $request)

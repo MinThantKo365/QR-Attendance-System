@@ -8,6 +8,7 @@ class Invitation extends Model
 {
     protected $fillable = [
         'invite_id',
+        'event_id',
         'name',
         'email',
         'phone',
@@ -24,5 +25,10 @@ class Invitation extends Model
     public function attendance()
     {
         return $this->hasOne(Attendance::class);
+    }
+
+     public function event()
+    {
+        return $this->belongsTo(Event::class);
     }
 }
