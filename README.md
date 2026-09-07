@@ -1,3 +1,10 @@
+## QR Attendance System
+QR Attendance is an event check-in web app that replaces paper lists with unique guest QR codes.
+
+Admins create events, issue invitations, and email each guest a personal QR code. At the door, staff scan codes by camera or image file—no login required on the scanner—to record attendance instantly. The admin dashboard tracks invitations, pending guests, check-ins, and today’s scans, with filters by event and date.
+
+Built for organizers who want faster entry, fewer errors, and a clear record of who attended.
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
@@ -6,6 +13,7 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
+
 
 ## About Laravel
 
