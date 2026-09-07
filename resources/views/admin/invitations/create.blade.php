@@ -53,6 +53,9 @@
                                                 @if ($event->location)
                                                     — {{ $event->location }}
                                                 @endif
+                                                @if ($event->status === 'draft')
+                                                    (Draft)
+                                                @endif
                                             </option>
                                         @endforeach
                                     </select>
@@ -61,7 +64,7 @@
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                                 @if ($events->isEmpty())
-                                    <div class="form-text">No events yet. You can still create the invitation without one.</div>
+                                    <div class="form-text">No active events yet. Cancelled events are hidden. You can still create the invitation without one.</div>
                                 @endif
                             </div>
 

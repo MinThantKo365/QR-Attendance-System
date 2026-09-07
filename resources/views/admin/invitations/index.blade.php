@@ -33,7 +33,18 @@
                                     <td class="fw-semibold">{{ $invitation->name }}</td>
                                     <td>{{ $invitation->email }}</td>
                                     <td>{{ $invitation->phone ?? '—' }}</td>
-                                    <td>{{ $invitation->event->name ?? '—' }}</td>
+                                    <td>
+                                        @if ($invitation->event)
+                                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                <span>{{ $invitation->event->name }}</span>
+                                                @if ($invitation->event->status === 'cancelled')
+                                                    <span class="badge rounded-pill bg-danger">Cancelled</span>
+                                                @endif
+                                            </div>
+                                        @else
+                                            —
+                                        @endif
+                                    </td>
                                     <td>
                                         @php
                                             $status = $invitation->status;

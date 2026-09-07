@@ -17,6 +17,7 @@ class InvitationQrMail extends Mailable
 
     public function __construct(public Invitation $invitation)
     {
+        $this->invitation->loadMissing('event');
     }
 
     public function envelope(): Envelope

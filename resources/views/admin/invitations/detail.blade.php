@@ -211,6 +211,18 @@
                         <dt>Phone</dt>
                         <dd>{{ $invitation->phone ?? '—' }}</dd>
 
+                        <dt>Event</dt>
+                        <dd>
+                            @if ($invitation->event)
+                                {{ $invitation->event->name }}
+                                @if ($invitation->event->status === 'cancelled')
+                                    <span class="badge rounded-pill bg-danger ms-1">Cancelled</span>
+                                @endif
+                            @else
+                                —
+                            @endif
+                        </dd>
+
                         <dt>Invite ID</dt>
                         <dd class="invite-id mb-3">{{ $invitation->invite_id }}</dd>
 

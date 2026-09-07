@@ -22,6 +22,32 @@
                             <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#495057;">
                                 Your invitation request has been received. Show this QR code at the entrance so staff can mark your attendance.
                             </p>
+
+                            @if ($invitation->event)
+                                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:0 0 20px;background:#f8f9fa;border:1px solid #e9ecef;border-radius:10px;">
+                                    <tr>
+                                        <td style="padding:16px 18px;">
+                                            <p style="margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:#6c757d;">Event</p>
+                                            <p style="margin:0 0 12px;font-size:16px;font-weight:700;color:#212529;">
+                                                {{ $invitation->event->name }}
+                                            </p>
+                                            @if ($invitation->event->location)
+                                                <p style="margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:#6c757d;">Location</p>
+                                                <p style="margin:0 0 12px;font-size:14px;color:#212529;">
+                                                    {{ $invitation->event->location }}
+                                                </p>
+                                            @endif
+                                            @if ($invitation->event->description)
+                                                <p style="margin:0 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:0.04em;color:#6c757d;">Description</p>
+                                                <p style="margin:0;font-size:14px;line-height:1.55;color:#495057;">
+                                                    {{ $invitation->event->description }}
+                                                </p>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                </table>
+                            @endif
+
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                                 <tr>
                                     <td align="center" style="padding:8px 0 20px;">

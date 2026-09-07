@@ -15,6 +15,7 @@ class InvitationController extends Controller
     public function index()
     {
         $invitations = Invitation::query()
+            ->with('event')
             ->latest()
             ->get();
 
@@ -24,6 +25,7 @@ class InvitationController extends Controller
     public function create()
     {
         $events = Event::query()
+            ->where('status', '!=', 'cancelled')
             ->orderBy('name')
             ->get();
 
@@ -32,7 +34,7 @@ class InvitationController extends Controller
 
     public function detail($id)
     {
-        $invitation = Invitation::with('attendance')->findOrFail($id);
+        $invitation = Invitation::with(['attendance', 'event'])->findOrFail($id);
         $qrBase64 = base64_encode(QrCodePng::generate($invitation->invite_id));
 
         return view('admin.invitations.detail', compact('invitation', 'qrBase64'));
@@ -61,7 +63,15 @@ class InvitationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'event_id' => 'nullable|exists:events,id',
+            'event_id' => [
+                'nullable',
+                'exists:events,id',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if ($value && Event::whereKey($value)->where('status', 'cancelled')->exists()) {
+                        $fail('You cannot assign a cancelled event.');
+                    }
+                },
+            ],
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:50',
@@ -82,12 +92,26 @@ class InvitationController extends Controller
 
     public function request()
     {
-        return view('admin.invitations.request');
+        $events = Event::query()
+            ->where('status', 'published')
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.invitations.request', compact('events'));
     }
 
     public function submitRequest(Request $request)
     {
         $validated = $request->validate([
+            'event_id' => [
+                'required',
+                'exists:events,id',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if ($value && ! Event::whereKey($value)->where('status', 'published')->exists()) {
+                        $fail('Please select a published event.');
+                    }
+                },
+            ],
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:50',
